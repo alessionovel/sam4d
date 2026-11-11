@@ -49,6 +49,27 @@ Files are named by object ID, so reconstructing another frame overwrites objects
 3. Run `sam3.ipynb` with the `.venv-sam3` kernel, top to bottom.
 4. Run `sam3d.ipynb` with the `.venv-sam3d` kernel, top to bottom.
 
+## Example data
+
+Release [`v0.1.0`](https://github.com/alessionovel/sam4d/releases/tag/v0.1.0) contains the input video and the outputs of both notebooks for it, produced with the notebook versions at that tag:
+
+| Asset | Contents |
+|---|---|
+| `input_video.mp4` | 1280x720 traffic video (25 fps) |
+| `sam3_output.zip` | `sam3.ipynb` output: prompt `car`, `high` preset, 300 frames at 12.5 fps, 35 tracked cars |
+| `sam3d_output.zip` | `sam3d.ipynb` output: the 5 largest cars of frame 192 (`.ply` + `.glb`) and the combined scene |
+| `SHA256SUMS` | checksums |
+
+Download and unpack them in the repository root:
+
+```bash
+gh release download v0.1.0 -R alessionovel/sam4d
+sha256sum -c SHA256SUMS
+unzip -q sam3_output.zip && unzip -q sam3d_output.zip
+```
+
+With `sam3_output/` in place, `sam3d.ipynb` can be run directly, without running SAM 3 first. Splats (`.ply`) can be viewed in a Gaussian-splat viewer such as [SuperSplat](https://superspl.at/editor); meshes (`.glb`) open in Blender or any glTF viewer.
+
 ## Hardware
 
 Measured on an RTX 4090 (24 GB), Linux:
@@ -56,7 +77,7 @@ Measured on an RTX 4090 (24 GB), Linux:
 | Step | Setting | VRAM peak | Speed |
 |---|---|---|---|
 | SAM 3 | `high` preset: 300 frames, 1280x720, native 1008 px | ~8–9 GB | ~2–3 frames/s |
-| SAM 3D | one object, 1280x720 frame | ~19 GB (13.7 GB just for the model) | ~1 min load, ~14 s per object |
+| SAM 3D | 5 objects, 1280x720 frame | ~19 GB (13.7 GB just for the model), does not grow per object | ~1 min load, 7–14 s per object |
 
 SAM 3D officially requires 32 GB of VRAM, but it runs on 24 GB as long as about 20 GB is free. SAM 3D Objects runs on Linux with an NVIDIA GPU only. SAM 3 also runs on Apple Silicon (MPS) or CPU, more slowly.
 
