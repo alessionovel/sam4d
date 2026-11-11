@@ -14,13 +14,27 @@ input_video.mp4 ──> sam3.ipynb ──> sam3_output/ ──> sam3d.ipynb ─�
 .
 ├── sam3.ipynb             # Step 1: segment and track every object matching a text prompt
 ├── sam3d.ipynb            # Step 2: reconstruct selected objects in 3D from one frame
+├── sam-3d-objects/        # git submodule: Meta's SAM 3D Objects code, pinned (see below)
 ├── docs/
 │   ├── SETUP.md           # Environment setup for both notebooks
+│   ├── RELEASING.md       # How submodule updates and data releases are managed
 │   └── TROUBLESHOOTING.md # Known problems, causes and fixes
-└── .gitignore             # Excludes outputs, videos, the cloned sam-3d-objects repo, envs
+├── .gitmodules
+└── .gitignore             # Excludes outputs, videos and environments
 ```
 
-Not tracked (generated locally): `input_video.mp4`, `sam3_output/`, `sam3d_output/`, `sam-3d-objects/`.
+Not tracked (downloaded or generated locally): `input_video.mp4`, `sam3_output/`, `sam3d_output/`, `sam-3d-objects/checkpoints/hf`.
+
+## What is versioned where
+
+| What | Where | How |
+|---|---|---|
+| Notebooks and docs | this repository | normal commits on `main` |
+| SAM 3D Objects code | `sam-3d-objects/` | git submodule pinned to `f91db41` (facebookresearch/sam-3d-objects), the version the notebooks were tested with |
+| Model weights | Hugging Face (gated) | downloaded locally, never committed (see [docs/SETUP.md](docs/SETUP.md)) |
+| Input video + both notebooks' outputs | GitHub Releases | one release per experiment, tagged on the commit that produced it |
+
+The release workflow and how to update the submodule are described in [docs/RELEASING.md](docs/RELEASING.md).
 
 ## How it works
 
@@ -44,10 +58,15 @@ Files are named by object ID, so reconstructing another frame overwrites objects
 
 ## Quick start
 
-1. Set up the two environments and the model access: see [docs/SETUP.md](docs/SETUP.md). They have to be separate environments because their dependencies conflict.
-2. Put the video next to the notebooks as `input_video.mp4`.
-3. Run `sam3.ipynb` with the `.venv-sam3` kernel, top to bottom.
-4. Run `sam3d.ipynb` with the `.venv-sam3d` kernel, top to bottom.
+1. Clone with the submodule:
+   ```bash
+   git clone --recurse-submodules git@github.com:alessionovel/sam4d.git
+   # already cloned without it:  git submodule update --init
+   ```
+2. Set up the two environments and the model access: see [docs/SETUP.md](docs/SETUP.md). They have to be separate environments because their dependencies conflict.
+3. Get the input video, either from the [example data](#example-data) or your own, and put it next to the notebooks as `input_video.mp4`.
+4. Run `sam3.ipynb` with the `.venv-sam3` kernel, top to bottom.
+5. Run `sam3d.ipynb` with the `.venv-sam3d` kernel, top to bottom.
 
 ## Example data
 
@@ -92,6 +111,6 @@ See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for problems found during
 ## Models and licenses
 
 - SAM 3: [`facebook/sam3`](https://huggingface.co/facebook/sam3) (gated)
-- SAM 3D Objects: [`facebook/sam-3d-objects`](https://huggingface.co/facebook/sam-3d-objects) (gated) and [github.com/facebookresearch/sam-3d-objects](https://github.com/facebookresearch/sam-3d-objects)
+- SAM 3D Objects: [`facebook/sam-3d-objects`](https://huggingface.co/facebook/sam-3d-objects) (gated) and [github.com/facebookresearch/sam-3d-objects](https://github.com/facebookresearch/sam-3d-objects) (included as a submodule, not modified)
 
-Both models are released by Meta under the SAM License.
+Both models are released by Meta under the SAM License. The `sam-3d-objects` submodule keeps its own license.

@@ -43,8 +43,10 @@ The SAM 3 weights download to `~/.cache/huggingface/hub` the first time Cell 4 r
 
 This follows the official [`doc/setup.md`](https://github.com/facebookresearch/sam-3d-objects/blob/main/doc/setup.md), with three fixes. Build it on a machine with the GPU attached, because PyTorch3D needs one at build time.
 
+The code comes from the `sam-3d-objects` submodule (pinned to the tested commit), so don't clone it separately:
+
 ```bash
-git clone https://github.com/facebookresearch/sam-3d-objects.git
+git submodule update --init      # no-op if you cloned with --recurse-submodules
 cd sam-3d-objects
 
 # Conda part: Python 3.11, CUDA 12.1 toolkit (nvcc), gcc 12.
@@ -73,6 +75,8 @@ cd ..
 
 The full install takes about 10–15 minutes.
 
+`pip install -e` links the environment to this checkout of the submodule. If you move the repository, run `pip install -e . --no-deps` again from the new `sam-3d-objects/`. The notebook itself adds the submodule to `sys.path`, so it always uses the checked-out version.
+
 ### Kernel environment variables (required)
 
 `sam-3d-objects/notebook/inference.py` reads `CONDA_PREFIX`, which a Jupyter kernel does not set. Add an `env` block to `~/.local/share/jupyter/kernels/sam3d/kernel.json`, using absolute paths:
@@ -97,6 +101,8 @@ ln -s ~/models/sam-3d-objects sam-3d-objects/checkpoints/hf
 ```
 
 The `hf` command from `.venv-sam3` works for this. The depth model (MoGe) downloads automatically on first use.
+
+`checkpoints/hf` is ignored by the submodule's own `.gitignore`, so the link doesn't show up as a change in `git status`.
 
 Check (inside the activated env, from `sam-3d-objects/`):
 ```bash

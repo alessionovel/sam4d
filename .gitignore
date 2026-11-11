@@ -8,9 +8,6 @@ sam3_output.zip
 sam3d_output/
 sam3d_output.zip
 
-# Repository clonato e checkpoint usati da sam3d.ipynb
-sam-3d-objects/
-
 # Video di input (182 MB: oltre il limite di 100 MB per file di GitHub)
 *.mp4
 *.mov
@@ -25,3 +22,6 @@ __pycache__/
 .venv/
 venv/
 .venv-*/
+
+# Release packaging (see docs/RELEASING.md)
+dist/
