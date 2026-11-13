@@ -88,7 +88,7 @@ The [latest release](https://github.com/alessionovel/sam4d/releases/latest) alwa
 | `input_video.mp4` | 1280x720 traffic video (25 fps) |
 | `sam3_output.zip` | `sam3.ipynb` output for it: prompt `car`, `high` preset, 300 frames at 12.5 fps, 35 tracked cars |
 | `sam3d_output.zip` | `sam3d.ipynb` output: the 5 largest cars of frame 192 (`.ply` + `.glb`) and the combined scene |
-| `lap_01_slalom_*` | ground-truth evaluation on the Vadena slalom: the sequence, SAM 3 output, `evaluate.ipynb` runs and preview videos (see [docs/EVALUATION.md](docs/EVALUATION.md)) |
+| `lap_01_slalom_*`, `lap_03_turntable_*`, `lap_02_circle_*` | ground-truth evaluation on three simulated Vadena sequences (slalom, turntable, circle): the sequences, SAM 3 outputs, `evaluate.ipynb` runs and preview videos (see [docs/EVALUATION.md](docs/EVALUATION.md)) |
 | `SHA256SUMS` | checksums |
 
 Download and unpack them in the repository root:
