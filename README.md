@@ -81,21 +81,22 @@ Files are named by object ID, so reconstructing another frame overwrites objects
 
 ## Example data
 
-Release [`v0.1.0`](https://github.com/alessionovel/sam4d/releases/tag/v0.1.0) contains the input video and the outputs of both notebooks for it, produced with the notebook versions at that tag:
+The [latest release](https://github.com/alessionovel/sam4d/releases/latest) always contains all the data published so far (see [docs/RELEASING.md](docs/RELEASING.md)):
 
 | Asset | Contents |
 |---|---|
 | `input_video.mp4` | 1280x720 traffic video (25 fps) |
-| `sam3_output.zip` | `sam3.ipynb` output: prompt `car`, `high` preset, 300 frames at 12.5 fps, 35 tracked cars |
+| `sam3_output.zip` | `sam3.ipynb` output for it: prompt `car`, `high` preset, 300 frames at 12.5 fps, 35 tracked cars |
 | `sam3d_output.zip` | `sam3d.ipynb` output: the 5 largest cars of frame 192 (`.ply` + `.glb`) and the combined scene |
+| `lap_01_slalom_*` | ground-truth evaluation on the Vadena slalom: the sequence, SAM 3 output, `evaluate.ipynb` runs and preview videos (see [docs/EVALUATION.md](docs/EVALUATION.md)) |
 | `SHA256SUMS` | checksums |
 
 Download and unpack them in the repository root:
 
 ```bash
-gh release download v0.1.0 -R alessionovel/sam4d
+gh release download -R alessionovel/sam4d          # latest release
 sha256sum -c SHA256SUMS
-unzip -q sam3_output.zip && unzip -q sam3d_output.zip
+for z in *.zip; do unzip -q "$z"; done
 ```
 
 With `sam3_output/` in place, `sam3d.ipynb` can be run directly, without running SAM 3 first. Splats (`.ply`) can be viewed in a Gaussian-splat viewer such as [SuperSplat](https://superspl.at/editor); meshes (`.glb`) open in Blender or any glTF viewer.

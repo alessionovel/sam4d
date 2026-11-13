@@ -46,19 +46,23 @@ Update the table above in the same commit.
 
 ## Data releases
 
-Each release is one experiment: an input video and the outputs both notebooks produced from it. It is tagged on the commit whose notebooks (and submodule pin) produced them, so data and code stay linked.
+**The latest release always contains all the data**: every input and every output published so far, not only what is new. `gh release download -R alessionovel/sam4d` (no tag) therefore always gets everything. A new release copies the assets of the previous one and adds or replaces what changed; older releases stay as history. Each release is tagged on the commit whose notebooks (and submodule pin) produced its newest outputs, so data and code stay linked.
 
 ### Naming
 
-- Tags: `vMAJOR.MINOR.PATCH` (`v0.1.0`, `v0.2.0`, ...). Bump MINOR for a new experiment (new video, prompt or settings), PATCH to fix assets of an existing one.
+- Tags: `vMAJOR.MINOR.PATCH` (`v0.1.0`, `v0.2.0`, ...). Bump MINOR when an experiment is added (new video, sequence, prompt or settings), PATCH to fix assets. Results that are still running when a release is made are added to that same release when they finish.
 - Assets, always with the same names so the download commands keep working:
 
 | Asset | Contents |
 |---|---|
-| `input_video.mp4` | the input video |
-| `sam3_output.zip` | `sam3_output/` folder (extracts to `sam3_output/`) |
-| `sam3d_output.zip` | `sam3d_output/` folder (extracts to `sam3d_output/`) |
-| `SHA256SUMS` | `sha256sum` of the three files above |
+| `input_video.mp4` | the example input video |
+| `sam3_output.zip` | example `sam3_output/` folder (extracts to `sam3_output/`) |
+| `sam3d_output.zip` | example `sam3d_output/` folder (extracts to `sam3d_output/`) |
+| `<sequence>_sequence.zip` | an evaluation sequence (extracts to `sequences/<name>/`) |
+| `<sequence>_sam3_output.zip` | `sam3.ipynb` output on it (extracts to `eval_output/sam3_<sequence>/`) |
+| `<sequence>_eval_output.zip` | `evaluate.ipynb` runs on it (extract to `eval_output/<sequence>_*/`) |
+| `<sequence>_*.mp4` | preview videos of those runs |
+| `SHA256SUMS` | `sha256sum` of every other asset |
 
 Each asset must be under GitHub's 2 GB per-file limit.
 
@@ -69,7 +73,7 @@ The release notes record what is needed to reproduce the run:
 - **sam3d.ipynb:** frame used, `MAX_OBJECTS` and filters, seed, reconstructed object IDs;
 - **hardware:** GPU and measured VRAM peaks.
 
-See [v0.1.0](https://github.com/alessionovel/sam4d/releases/tag/v0.1.0) for an example.
+See [v0.2.0](https://github.com/alessionovel/sam4d/releases/tag/v0.2.0) for an example.
 
 ### Creating a release
 
@@ -79,24 +83,26 @@ Run both notebooks to completion first; outputs from a crashed run are inconsist
 # 1. make sure the notebooks and the submodule pin that produced the outputs are committed and pushed
 git status && git submodule status
 
-# 2. package (zips keep the top-level folder)
+# 2. start from everything in the current latest release
 mkdir -p dist
-zip -q -r dist/sam3_output.zip sam3_output
-zip -q -r dist/sam3d_output.zip sam3d_output
-cp input_video.mp4 dist/
-(cd dist && sha256sum input_video.mp4 sam3_output.zip sam3d_output.zip > SHA256SUMS)
+(cd dist && gh release download -R alessionovel/sam4d && sha256sum -c SHA256SUMS && rm SHA256SUMS)
 
-# 3. tag and publish
-git tag -a vX.Y.Z -m "Example data: <short description>"
+# 3. add or replace the new assets (zips keep the top-level folder, see the naming table), e.g.
+zip -q -r dist/<sequence>_eval_output.zip eval_output/<sequence>_*
+(cd dist && sha256sum * > SHA256SUMS)
+
+# 4. tag and publish as the latest release
+git tag -a vX.Y.Z -m "<short description>"
 git push origin vX.Y.Z
-gh release create vX.Y.Z --verify-tag --title "vX.Y.Z: <short description>" \
-    --notes-file notes.md dist/input_video.mp4 dist/sam3_output.zip dist/sam3d_output.zip dist/SHA256SUMS
+gh release create vX.Y.Z --verify-tag --latest --title "vX.Y.Z: <short description>" --notes-file notes.md dist/*
 
-# 4. verify the upload
+# 5. verify the upload
 (mkdir -p /tmp/check && cd /tmp/check && gh release download vX.Y.Z -R alessionovel/sam4d && sha256sum -c SHA256SUMS)
 ```
 
-Delete `dist/` afterwards. Then update the "Example data" section of the README if the new release should become the default example.
+To add results that finished after the release was made, upload them to the same release (`gh release upload vX.Y.Z <files>`), then upload the regenerated `SHA256SUMS` with `--clobber` and update the notes (`gh release edit vX.Y.Z --notes-file notes.md`).
+
+Delete `dist/` afterwards. The release notes keep one section per experiment, so they describe everything the release contains.
 
 ### Before publishing
 
