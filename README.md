@@ -8,22 +8,28 @@ input_video.mp4 ──> sam3.ipynb ──> sam3_output/ ──> sam3d.ipynb ─�
                                     tracks.csv                       combined scene
 ```
 
+`evaluate.ipynb` runs the same two models on a sequence with known ground truth (for example from a simulator) and measures the errors in position, orientation and size: see [docs/EVALUATION.md](docs/EVALUATION.md).
+
 ## Repository layout
 
 ```
 .
 ├── sam3.ipynb             # Step 1: segment and track every object matching a text prompt
 ├── sam3d.ipynb            # Step 2: reconstruct selected objects in 3D from one frame
+├── evaluate.ipynb         # Evaluation: SAM 3 + SAM 3D per frame vs ground truth
+├── tools/
+│   └── render_reconstruction.py  # Video of the SAM 3D reconstruction alone (real object removed)
 ├── sam-3d-objects/        # git submodule: Meta's SAM 3D Objects code, pinned (see below)
 ├── docs/
 │   ├── SETUP.md           # Environment setup for both notebooks
 │   ├── RELEASING.md       # How submodule updates and data releases are managed
+│   ├── EVALUATION.md      # Ground-truth sequence format, metrics, how to run the evaluation
 │   └── TROUBLESHOOTING.md # Known problems, causes and fixes
 ├── .gitmodules
 └── .gitignore             # Excludes outputs, videos and environments
 ```
 
-Not tracked (downloaded or generated locally): `input_video.mp4`, `sam3_output/`, `sam3d_output/`, `sam-3d-objects/checkpoints/hf`.
+Not tracked (downloaded or generated locally): `input_video.mp4`, `sam3_output/`, `sam3d_output/`, `sequences/`, `eval_output/`, `sam-3d-objects/checkpoints/hf`.
 
 ## What is versioned where
 
@@ -39,7 +45,7 @@ The release workflow and how to update the submodule are described in [docs/RELE
 ## How it works
 
 ### 1. `sam3.ipynb`: tracking (Hugging Face Transformers `Sam3VideoModel`)
-- Loads the video at about `FPS_TARGET` frames per second, resized according to a memory preset (`low` / `medium` / `high`, chosen automatically from the available VRAM).
+- Loads the video (or a folder of numbered frames) at about `FPS_TARGET` frames per second, resized according to a memory preset (`low` / `medium` / `high`, chosen automatically from the available VRAM).
 - Segments and tracks every object matching `PROMPTS` (default `["car"]`) through the whole clip.
 - Writes `sam3_output/`:
   - `tracked_output.mp4`: overlay video
@@ -55,6 +61,11 @@ The release workflow and how to update the submodule are described in [docs/RELE
 - Frees the model after the reconstruction loop. Re-run Cell 4 before reconstructing again.
 
 Files are named by object ID, so reconstructing another frame overwrites objects that appear in both.
+
+### 3. `evaluate.ipynb`: evaluation against ground truth
+- Input: a sequence folder with frames, camera intrinsics and the object's true pose per frame ([format](docs/EVALUATION.md#sequence-format)), plus the `sam3.ipynb` output for it (or the true masks).
+- Reconstructs the object in **every sampled frame** (default 3 per second), saving each frame as soon as it is done, so interrupted runs resume.
+- Writes per-frame metrics (`metrics.csv`), a summary, error plots, a top view of the trajectory and an overlay video of the reconstruction on the real frames.
 
 ## Quick start
 

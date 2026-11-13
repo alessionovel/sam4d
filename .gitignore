@@ -7,6 +7,10 @@ sam3_output/
 sam3_output.zip
 sam3d_output/
 sam3d_output.zip
+eval_output/
+
+# Ground-truth sequences (large, kept outside the repository; see docs/EVALUATION.md)
+sequences
 
 # Video di input (182 MB: oltre il limite di 100 MB per file di GitHub)
 *.mp4
