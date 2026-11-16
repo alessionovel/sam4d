@@ -26,7 +26,7 @@ conda create -y -p ./.venv-sam3 -c conda-forge --override-channels python=3.12 p
 conda activate ./.venv-sam3
 
 pip install torch==2.10.0 torchvision --index-url https://download.pytorch.org/whl/cu128
-pip install -U transformers accelerate huggingface_hub opencv-python pillow matplotlib psutil tqdm ipykernel
+pip install -U "transformers==5.22.1" accelerate huggingface_hub opencv-python pillow matplotlib psutil tqdm ipykernel
 pip install "kernels==0.17.3"   # must match the range transformers accepts, see TROUBLESHOOTING.md
 
 python -m ipykernel install --user --name sam3 --display-name "Python (.venv-sam3)"
