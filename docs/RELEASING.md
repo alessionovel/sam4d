@@ -46,7 +46,7 @@ Update the table above in the same commit.
 
 ## Data releases
 
-**The latest release always contains all the data**: every input and every output published so far, not only what is new. `gh release download -R alessionovel/sam4d` (no tag) therefore always gets everything. A new release copies the assets of the previous one and adds or replaces what changed; older releases stay as history. Each release is tagged on the commit whose notebooks (and submodule pin) produced its newest outputs, so data and code stay linked.
+**The latest release always contains all the data**: every input and every output published so far, not only what is new. `gh release download -R alessionovel/sam4d --pattern '*'` (no tag) therefore always gets everything. A new release copies the assets of the previous one and adds or replaces what changed; older releases stay as history. Each release is tagged on the commit whose notebooks (and submodule pin) produced its newest outputs, so data and code stay linked.
 
 ### Naming
 
@@ -85,7 +85,7 @@ git status && git submodule status
 
 # 2. start from everything in the current latest release
 mkdir -p dist
-(cd dist && gh release download -R alessionovel/sam4d && sha256sum -c SHA256SUMS && rm SHA256SUMS)
+(cd dist && gh release download -R alessionovel/sam4d --pattern '*' && sha256sum -c SHA256SUMS && rm SHA256SUMS)
 
 # 3. add or replace the new assets (zips keep the top-level folder, see the naming table), e.g.
 zip -q -r dist/<sequence>_eval_output.zip eval_output/<sequence>_*

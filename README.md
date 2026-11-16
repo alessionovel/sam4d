@@ -26,10 +26,10 @@ input_video.mp4 ──> sam3.ipynb ──> sam3_output/ ──> sam3d.ipynb ─�
 │   ├── EVALUATION.md      # Ground-truth sequence format, metrics, how to run the evaluation
 │   └── TROUBLESHOOTING.md # Known problems, causes and fixes
 ├── .gitmodules
-└── .gitignore             # Excludes outputs, videos and environments
+└── .gitignore             # Excludes outputs, videos, environments and downloaded release files
 ```
 
-Not tracked (downloaded or generated locally): `input_video.mp4`, `sam3_output/`, `sam3d_output/`, `sequences/`, `eval_output/`, `sam-3d-objects/checkpoints/hf`.
+Not tracked (downloaded or generated locally): `input_video.mp4`, `sam3_output/`, `sam3d_output/`, `sequences/`, `eval_output/`, `release/` (downloaded release assets), `sam-3d-objects/checkpoints/hf`.
 
 ## What is versioned where
 
@@ -72,12 +72,14 @@ Files are named by object ID, so reconstructing another frame overwrites objects
 1. Clone with the submodule:
    ```bash
    git clone --recurse-submodules git@github.com:alessionovel/sam4d.git
+   # or with HTTPS:  git clone --recurse-submodules https://github.com/alessionovel/sam4d.git
    # already cloned without it:  git submodule update --init
    ```
 2. Set up the two environments and the model access: see [docs/SETUP.md](docs/SETUP.md). They have to be separate environments because their dependencies conflict.
 3. Get the input video, either from the [example data](#example-data) or your own, and put it next to the notebooks as `input_video.mp4`.
 4. Run `sam3.ipynb` with the `.venv-sam3` kernel, top to bottom.
-5. Run `sam3d.ipynb` with the `.venv-sam3d` kernel, top to bottom.
+5. Run `sam3d.ipynb` with the `.venv-sam3d` kernel, top to bottom (Linux with an NVIDIA GPU only, see [Hardware](#hardware)).
+6. To evaluate against ground truth, run `evaluate.ipynb`: see [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ## Example data
 
@@ -91,13 +93,20 @@ The [latest release](https://github.com/alessionovel/sam4d/releases/latest) alwa
 | `lap_01_slalom_*`, `lap_03_turntable_*`, `lap_02_circle_*` | ground-truth evaluation on three simulated Vadena sequences (slalom, turntable, circle): the sequences, SAM 3 outputs, `evaluate.ipynb` runs and preview videos (see [docs/EVALUATION.md](docs/EVALUATION.md)) |
 | `SHA256SUMS` | checksums |
 
-Download and unpack them in the repository root:
+Large sequences are split into `_part1.zip` and `_part2.zip`: unzip both, they extract into the same `sequences/<name>/` folder. Preview videos are published both as `.mp4` and as `.gif`.
+
+Download them into `release/` (ignored by git) and unpack them in the repository root:
 
 ```bash
-gh release download -R alessionovel/sam4d          # latest release
-sha256sum -c SHA256SUMS
-for z in *.zip; do unzip -q "$z"; done
+gh release download -R alessionovel/sam4d --pattern '*' -D release   # latest release, all assets
+cd release
+sha256sum -c SHA256SUMS                # macOS: shasum -a 256 -c SHA256SUMS
+for z in *.zip; do unzip -q -o "$z" -d ..; done
+cp input_video.mp4 ..
+cd ..
 ```
+
+The zips already contain their top-level folder (`sam3_output/`, `sequences/<name>/`, `eval_output/...`), so they land in the right place. Keep or delete `release/` afterwards.
 
 With `sam3_output/` in place, `sam3d.ipynb` can be run directly, without running SAM 3 first. Splats (`.ply`) can be viewed in a Gaussian-splat viewer such as [SuperSplat](https://superspl.at/editor); meshes (`.glb`) open in Blender or any glTF viewer.
 

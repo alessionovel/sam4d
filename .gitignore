@@ -2,7 +2,7 @@
 .DS_Store
 **/.DS_Store
 
-# Output dei notebook
+# Notebook outputs
 sam3_output/
 sam3_output.zip
 sam3d_output/
@@ -12,7 +12,7 @@ eval_output/
 # Ground-truth sequences (large, kept outside the repository; see docs/EVALUATION.md)
 sequences
 
-# Video di input (182 MB: oltre il limite di 100 MB per file di GitHub)
+# Input videos (182 MB: over GitHub's 100 MB per-file limit)
 *.mp4
 *.mov
 *.avi
@@ -29,3 +29,9 @@ venv/
 
 # Release packaging (see docs/RELEASING.md)
 dist/
+
+# Downloaded release assets (see README, Example data)
+release/
+*.zip
+*.gif
+SHA256SUMS
